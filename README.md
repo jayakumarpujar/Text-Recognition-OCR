@@ -2,147 +2,49 @@
 
 
 # Text-Recognition-OCR
-Training new TR detection model using Tesseract OCR engine 5.2 with new fonts.
+Training new TR model using Tesseract OCR engine 5.2 with new fonts.
 
 # Tesseract OCR
 
-[![Build status](https://ci.appveyor.com/api/projects/status/miah0ikfsf0j3819/branch/master?svg=true)](https://ci.appveyor.com/project/zdenop/tesseract/)
-[![Build status](https://github.com/tesseract-ocr/tesseract/workflows/sw/badge.svg)](https://github.com/tesseract-ocr/tesseract/actions/workflows/sw.yml)<br>
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/tesseract-ocr/badge.svg)](https://scan.coverity.com/projects/tesseract-ocr)
-[![Code Quality: Cpp](https://img.shields.io/lgtm/grade/cpp/g/tesseract-ocr/tesseract.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tesseract-ocr/tesseract/context:cpp)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/tesseract-ocr/tesseract.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tesseract-ocr/tesseract/alerts)
-[![OSS-Fuzz](https://img.shields.io/badge/oss--fuzz-fuzzing-brightgreen)](https://bugs.chromium.org/p/oss-fuzz/issues/list?sort=-opened&can=2&q=proj:tesseract-ocr)
-<br/>
-[![GitHub license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://raw.githubusercontent.com/tesseract-ocr/tesseract/main/LICENSE)
-[![Downloads](https://img.shields.io/badge/download-all%20releases-brightgreen.svg)](https://github.com/tesseract-ocr/tesseract/releases/)
+This project is based on Tesseract OCR -5.2 
 
-Table of Contents
-=================
+We can add new fonts and train the model for text recognition on image or PDF with best accuracy.
 
-* [Tesseract OCR](#tesseract-ocr)
-   * [About](#about)
-   * [Brief history](#brief-history)
-   * [Installing Tesseract](#installing-tesseract)
-   * [Running Tesseract](#running-tesseract)
-   * [For developers](#for-developers)
-   * [Support](#support)
-   * [License](#license)
-   * [Dependencies](#dependencies)
-   
+We are using current best lstm eng model as a base model. 
+
+Please use official tesseract repo for setup and change the requirements using this repo for further training and testing.
 
 
-## About
 
-This package contains an **OCR engine** - `libtesseract` and a **command line program** - `tesseract`.
-Tesseract 4 adds a new neural net (LSTM) based OCR engine which is focused
-on line recognition, but also still supports the legacy Tesseract OCR engine of
-Tesseract 3 which works by recognizing character patterns. Compatibility with
-Tesseract 3 is enabled by using the Legacy OCR Engine mode (--oem 0).
-It also needs [traineddata](https://tesseract-ocr.github.io/tessdoc/Data-Files.html) files which support the legacy engine, for example
-those from the [tessdata](https://github.com/tesseract-ocr/tessdata) repository.
 
-The lead developer is Ray Smith. The maintainer is Zdenko Podobny.
-For a list of contributors see [AUTHORS](https://github.com/tesseract-ocr/tesseract/blob/main/AUTHORS)
-and GitHub's log of [contributors](https://github.com/tesseract-ocr/tesseract/graphs/contributors).
+For Loading Pages
+Give the font name in fontlist argument and also Give the directory name at output_dir train/which is you are created in the path "tesseract-5.2.0-rc1/train/"
 
-Tesseract has **unicode (UTF-8) support**, and can **recognize more than 100 languages** "out of the box".
 
-Tesseract supports **[various image formats](https://tesseract-ocr.github.io/tessdoc/InputFormats)** including PNG, JPEG and TIFF.
+sudo src/training/tesstrain.sh --fonts_dir /usr/local/share/fonts --fontlist  'Digital-7 mono' 'Vitali slab fat, Regular' 'Falling sky, Bold' --lang eng --linedata_only --langdata_dir langdata_lstm  --training_text ./digits_printed.txt  --tessdata_dir tessdata --save_box_tiff --maxpages 500000 --output_dir train/Directory_name
 
-Tesseract supports **various output formats**: plain text, hOCR (HTML), PDF, invisible-text-only PDF, TSV and ALTO (the last one - since version 4.1.0).
+# Installation and Training 
+RUN ./autogen.sh
 
-You should note that in many cases, in order to get better OCR results,
-you'll need to **[improve the quality](https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html) of the image** you are giving Tesseract.
+RUN ./configure --enable-debug
 
-This project **does not include a GUI application**.
-If you need one, please see the [3rdParty](https://tesseract-ocr.github.io/tessdoc/User-Projects-%E2%80%93-3rdParty.html) documentation.
+RUN make
 
-Tesseract **can be trained to recognize other languages**.
-See [Tesseract Training](https://tesseract-ocr.github.io/tessdoc/Training-Tesseract.html) for more information.
+RUN make install
 
-## Brief history
+RUN ldconfig
 
-Tesseract was originally developed at Hewlett-Packard Laboratories Bristol and
-at Hewlett-Packard Co, Greeley Colorado between 1985 and 1994, with some
-more changes made in 1996 to port to Windows, and some C++izing in 1998.
-In 2005 Tesseract was open sourced by HP. From 2006 until November 2018 it was developed by Google.
+RUN make training
 
-Major version 5 is the current stable version and started with release
-[5.0.0](https://github.com/tesseract-ocr/tesseract/releases/tag/5.0.0) on November 30, 2021.
-Newer minor versions and bugfix versions are available from
-[GitHub](https://github.com/tesseract-ocr/tesseract/releases/).
+RUN make training-install
 
-Latest source code is available from [main branch on GitHub](https://github.com/tesseract-ocr/tesseract/tree/main).
-Open issues can be found in [issue tracker](https://github.com/tesseract-ocr/tesseract/issues),
-and [planning documentation](https://tesseract-ocr.github.io/tessdoc/Planning.html).
+RUN apt install python3-pip 
 
-See **[Release Notes](https://tesseract-ocr.github.io/tessdoc/ReleaseNotes.html)**
-and **[Change Log](https://github.com/tesseract-ocr/tesseract/blob/main/ChangeLog)** for more details of the releases.
+RUN cp ./fonts/* /usr/local/share/fonts/
 
-## Installing Tesseract
+RUN chmod +x /ocr/Training/auto.old.sh
 
-You can either [Install Tesseract via pre-built binary package](https://tesseract-ocr.github.io/tessdoc/Home.html)
-or [build it from source](https://tesseract-ocr.github.io/tessdoc/Compiling.html).
+ENV TESSDATA_PREFIX=/ocr/Training/tessdata
 
-A C++ compiler with good C++17 support is required for building Tesseract from source.
-
-## Running Tesseract
-
-Basic **[command line usage](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html)**:
-
-    tesseract imagename outputbase [-l lang] [--oem ocrenginemode] [--psm pagesegmode] [configfiles...]
-
-For more information about the various command line options use `tesseract --help` or `man tesseract`.
-
-Examples can be found in the [documentation](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html#simplest-invocation-to-ocr-an-image).
-
-## For developers
-
-Developers can use `libtesseract` [C](https://github.com/tesseract-ocr/tesseract/blob/main/include/tesseract/capi.h) or
-[C++](https://github.com/tesseract-ocr/tesseract/blob/main/include/tesseract/baseapi.h) API to build their own application.
-If you need bindings to `libtesseract` for other programming languages, please see the
-[wrapper](https://tesseract-ocr.github.io/tessdoc/AddOns.html#tesseract-wrappers) section in the AddOns documentation.
-
-Documentation of Tesseract generated from source code by doxygen can be found on [tesseract-ocr.github.io](https://tesseract-ocr.github.io/).
-
-## Support
-
-Before you submit an issue, please review **[the guidelines for this repository](https://github.com/tesseract-ocr/tesseract/blob/main/CONTRIBUTING.md)**.
-
-For support, first read the [documentation](https://tesseract-ocr.github.io/tessdoc/),
-particularly the [FAQ](https://tesseract-ocr.github.io/tessdoc/FAQ.html) to see if your problem is addressed there.
-If not, search the [Tesseract user forum](https://groups.google.com/g/tesseract-ocr), the [Tesseract developer forum](https://groups.google.com/g/tesseract-dev) and [past issues](https://github.com/tesseract-ocr/tesseract/issues), and if you still can't find what you need, ask for support in the mailing-lists.
-
-Mailing-lists:
-* [tesseract-ocr](https://groups.google.com/g/tesseract-ocr) - For tesseract users.
-* [tesseract-dev](https://groups.google.com/g/tesseract-dev) - For tesseract developers.
-
-Please report an issue only for a **bug**, not for asking questions.
-
-## License
-
-    The code in this repository is licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
-**NOTE**: This software depends on other packages that may be licensed under different open source licenses.
-
-Tesseract uses [Leptonica library](http://leptonica.com/) which essentially
-uses a [BSD 2-clause license](http://leptonica.com/about-the-license.html).
-
-## Dependencies
-
-Tesseract uses [Leptonica library](https://github.com/DanBloomberg/leptonica)
-for opening input images (e.g. not documents like pdf).
-It is suggested to use leptonica with built-in support for [zlib](https://zlib.net),
-[png](https://sourceforge.net/projects/libpng) and
-[tiff](http://www.simplesystems.org/libtiff) (for multipage tiff).
+ENTRYPOINT ["/ocr/Training/auto.old.sh"]
 
